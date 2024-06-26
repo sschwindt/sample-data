@@ -1,0 +1,23 @@
+## About
+
+The XS-morphology.csv dataset is used in:
+
+* the environmental fluid mechanics book-scriptum (private source).
+* the Support-Vector-Machine example at https://hydro-informatics.com/datascience/morphology-predictor-svm.html (open source).
+
+## Data Source
+
+This dataset was extract from https://bedloadweb.com :
+
+Recking, A., 2019. BedloadWeb and User Manuel. https://doi.org/10.13140/RG.2.2.32856.34564/1 
+
+Please note that the site may take more than 5 minutes to fully load.
+
+## Requirements
+
+For running `neuralnetwork.py`, aA Python3 environment with the following library is needed:
+
+* Scikit-learn: https://scikit-learn.org
+* TensorFlow: https://www.tensorflow.org
+
+
