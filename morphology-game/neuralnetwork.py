@@ -6,6 +6,9 @@ from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score, f1_score
+# for per-feature importance
+import shap
+import matplotlib.pyplot as plt
 
 # load dataset
 filename = 'XS-morphology.csv'
@@ -14,6 +17,8 @@ data = pd.read_csv(filename, sep=',')
 # preprocess data
 X = data[['W', 'S', 'Q', 'U', 'H']].values
 y = data['Morphology'].values
+data.dropna(inplace=True)
+
 
 # encode target variable
 label_encoder = LabelEncoder()
@@ -54,3 +59,27 @@ print("F1 Score: ", f1)
 
 # print classification report
 print(classification_report(y_test, y_pred_classes, target_names=label_encoder.classes_))
+
+# calculate SHAP values
+explainer = shap.Explainer(model, X_train)
+shap_values = explainer(X_test)
+
+# convert SHAP values to 2D array
+shap_values_array = shap_values.values
+
+
+# plot feature importance
+feature_names = ['W', 'S', 'Q', 'U', 'H']
+mean_shap_values = np.nanmean(np.abs(shap_values.values), axis=0)
+plt.figure(figsize=(6.5, 3.5)) 
+plt.barh(feature_names, np.mean(mean_shap_values, axis=0), color='gray')
+plt.xlabel('Mean SHAP Value')
+plt.ylabel('Features')
+plt.xticks(fontsize=11) 
+plt.yticks(fontsize=11)
+
+plt.tight_layout() 
+plt.savefig('mean-shap-values-plot.png', dpi=300) 
+plt.close() 
+print("Bar plot saved as 'mean-shap-values-plot.png'")
+
