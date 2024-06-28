@@ -15,7 +15,7 @@ filename = 'XS-morphology.csv'
 data = pd.read_csv(filename, sep=',')
 
 # preprocess data
-X = data[['W', 'S', 'Q', 'U', 'H']].values
+X = data[['w','S0','Q','U','h']].values
 y = data['Morphology'].values
 data.dropna(inplace=True)
 
@@ -67,9 +67,8 @@ shap_values = explainer(X_test)
 # convert SHAP values to 2D array
 shap_values_array = shap_values.values
 
-
 # plot feature importance
-feature_names = ['W', 'S', 'Q', 'U', 'H']
+feature_names = ['w','S0','Q','U','h']
 mean_shap_values = np.nanmean(np.abs(shap_values.values), axis=0)
 plt.figure(figsize=(6.5, 3.5)) 
 plt.barh(feature_names, np.mean(mean_shap_values, axis=0), color='gray')
@@ -77,7 +76,7 @@ plt.xlabel('Mean SHAP Value')
 plt.ylabel('Features')
 plt.xticks(fontsize=11) 
 plt.yticks(fontsize=11)
-
+# save figure to disk
 plt.tight_layout() 
 plt.savefig('mean-shap-values-plot.png', dpi=300) 
 plt.close() 
