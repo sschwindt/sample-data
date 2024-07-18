@@ -1,4 +1,4 @@
-name: bed-data-env
+name: data-env
 channels:
   - conda-forge
   - defaults
