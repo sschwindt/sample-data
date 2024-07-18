@@ -1,0 +1,11 @@
+fitter
+matplotlib
+numpy
+openpyxl
+pandas
+scikit_learn
+scikit_posthocs
+scipy
+seaborn
+statannotations
+statsmodels

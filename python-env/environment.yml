@@ -1,0 +1,13 @@
+name: bed-data-env
+channels:
+  - conda-forge
+  - defaults
+  - blaze
+  - anaconda
+
+dependencies:
+  - python>=3.6
+  - anaconda
+  - pip
+  - pip:
+    - -r requirements.txt
