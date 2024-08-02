@@ -21,7 +21,7 @@ Creates a plot with two different mesh resolutions.
 
 ## Detailed Workflow for FEM
 
-This workflow outlines the main steps and equations involved in implementing a simplified finite element method for a 2d advection problem using explicit time integration.
+This workflow outlines the main steps and equations involved in implementing a simplified finite element method for a 2d advection problem using explicit time integration. Note that \( u \) denotes TRACER CONCENTRATION. Velocity is defined by \( v_x \) and  \( v_y \).
 
 ### 1. Discretize the Domain
 
