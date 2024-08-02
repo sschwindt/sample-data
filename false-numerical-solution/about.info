@@ -1,0 +1,127 @@
+This folder contains a Python script to exemplify false numerical diffusion with FDM and a FEM.
+
+## Requirements
+
+* numpy
+* matplotlib
+
+## Input Parameters
+
+```python
+nx, ny = 10, 10    # number of cells in x and y directions
+vx, vy = 1.0, 1.0  # flow velocity in x and y directions
+dt = 0.01          # timestep soze
+nt = 100           # number of timesteps
+
+```
+
+## Output
+
+Creates a plot with two different mesh resolutions.
+
+## Detailed Workflow for FEM
+
+This workflow outlines the main steps and equations involved in implementing a simplified finite element method for a 2d advection problem using explicit time integration.
+
+### 1. Discretize the Domain
+
+Let \( \Omega \) be the computational domain, which is divided into a mesh of elements. In this example, we use a rectangular domain \([0, L_x] \times [0, L_y]\) with \( n_x \) and \( n_y \) grid points in the \( x \) and \( y \) directions, respectively.
+
+### 2. Initial Condition
+
+The initial condition \( u(x, y, t=0) \) is a step function:
+
+\[
+u(x, y, 0) = 
+\begin{cases} 
+2, & \text{if } \frac{L_x}{4} \leq x \leq \frac{L_x}{2} \\
+1, & \text{otherwise}
+\end{cases}
+\]
+
+### 3. Weak Form of the Advection Equation
+
+Consider the 2D advection equation:
+
+\[
+\frac{\partial u}{\partial t} + v_x \frac{\partial u}{\partial x} + v_y \frac{\partial u}{\partial y} = 0
+\]
+
+Multiplying by a test function \( \phi \) and integrating over the domain \( \Omega \):
+
+\[
+\int_{\Omega} \frac{\partial u}{\partial t} \phi \, d\Omega + \int_{\Omega} v_x \frac{\partial u}{\partial x} \phi \, d\Omega + \int_{\Omega} v_y \frac{\partial u}{\partial y} \phi \, d\Omega = 0
+\]
+
+### 4. Discretization Using Finite Elements
+
+The solution \( u \) and test function \( \phi \) are approximated by linear combinations of shape functions \( \phi_i \):
+
+\[
+u \approx \sum_{i} u_i \phi_i
+\]
+
+Substituting the finite element approximations into the weak form:
+
+\[
+\int_{\Omega} \left( \sum_{i} \frac{\partial u_i}{\partial t} \phi_i \right) \phi \, d\Omega + \int_{\Omega} v_x \left( \sum_{i} u_i \frac{\partial \phi_i}{\partial x} \right) \phi \, d\Omega + \int_{\Omega} v_y \left( \sum_{i} u_i \frac{\partial \phi_i}{\partial y} \right) \phi \, d\Omega = 0
+\]
+
+### 5. Time Integration
+
+Using explicit time integration (Euler forward method):
+
+\[
+\frac{u_i^{n+1} - u_i^n}{\Delta t} + v_x \frac{\partial u_i^n}{\partial x} + v_y \frac{\partial u_i^n}{\partial y} = 0
+\]
+
+Rearranging for \( u_i^{n+1} \):
+
+\[
+u_i^{n+1} = u_i^n - \Delta t \left( v_x \frac{\partial u_i^n}{\partial x} + v_y \frac{\partial u_i^n}{\partial y} \right)
+\]
+
+### 6. Implementation in the Function
+
+The function `run_fem_simulation` implements the above equations in a simplified form:
+
+```python
+def run_fem_simulation(nx, ny, nt, dt, vx, vy):
+    Lx, Ly = 10.0, 10.0
+    x = np.linspace(0, Lx, nx)
+    y = np.linspace(0, Ly, ny)
+    X, Y = np.meshgrid(x, y)
+    u = np.ones((ny, nx))
+    u[:, int(nx/4):int(nx/2)] = 2.0
+    
+    x_flat = X.flatten()
+    y_flat = Y.flatten()
+    triang = tri.Triangulation(x_flat, y_flat)
+    
+    for n in range(nt):
+        u_new = u.copy()
+        for i in range(1, ny-1):
+            for j in range(1, nx-1):
+                u_new[i, j] = u[i, j] - vx * dt * (u[i, j] - u[i-1, j]) / dx - vy * dt * (u[i, j] - u[i, j-1]) / dy
+        
+        u = u_new
+    
+    u_flat = u.flatten()
+    return triang, u_flat
+```
+
+### Explanation of the Function Steps:
+
+1. Discretize the Domain: The domain \([0, L_x] \times [0, L_y]\) is divided into a mesh with \( n_x \) and \( n_y \) grid points in the \( x \) and \( y \) directions, respectively.
+
+2. Initial Condition: The initial condition is set as a step function.
+
+3. Flatten the Grid: The grid points are flattened for triangulation.
+
+4. Time Integration: An explicit time integration scheme (Euler forward) is used to update the solution at each time step.
+
+5. Update the Solution: For each time step, the new values of \( u \) are computed using the finite difference approximations of the spatial derivatives and the advection velocities \( v_x \) and \( v_y \).
+
+6. Return the Triangulation and Solution: The triangulation and the flattened solution are returned for plotting.
+
+
