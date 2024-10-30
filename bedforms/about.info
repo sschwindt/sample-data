@@ -1,0 +1,215 @@
+This folder contains Python scripts that (1) plot the critical bed-shear velocity as a function of the grain-related Reynolds number and (2) illustrate the workflow for calculating bed friction coefficients according to [Van Rijn (1984)](https://ascelibrary.org/doi/10.1061/%28ASCE%290733-9429%281984%29110%3A12%281733%29).
+
+## Plot critical bed-shear velocity
+
+This code is stored in `plot_shields_velocity.py`.
+
+### Requirements
+
+* numpy
+* matplotlib
+
+### Workflow
+
+This script visualizes the relationship between critical bed-shear velocity (\( u_{x, cr} \)) and the grain-related Reynolds number (\( Re_x \)), which is essential in hydraulic engineering and sediment transport studies. The plot provides insights into the onset of sediment motion based on bed-shear stress and grain size characteristics.
+
+
+### Constants
+The script defines several physical constants and parameters used in sediment transport analysis:
+- `g` : Gravitational acceleration (9.81 m/s²).
+- `d50` : Median grain diameter in meters (e.g., 0.1 mm or 0.1e-3 m).
+- `s` : Specific gravity of sediment (e.g., 2.68 for typical sediment).
+- `S` : Slope of the riverbed or channel.
+- `Rh` : Hydraulic radius, an approximation for the cross-sectional flow area.
+- `nu` : Kinematic viscosity of water (1e-6 m\(^2\)/s), important for calculating Reynolds numbers.
+
+```python
+g = 9.81  # gravitational acceleration (m/s^2)
+d50 = 0.1e-3  # median grain diameter (m)
+s = 2.68  # specific gravity of sediment
+S = 0.0001  # slope
+Rh = 0.5  # hydraulic radius approximation (m)
+nu = 1e-6  # kinematic viscosity (m^2/s)
+```
+
+## Calculate the grain-realted Reynolds number
+The grain-related Reynolds number \( Re_x \) is calculated using a linear distribution, from `Re_x_min` (10) to `Re_x_max` (100,000).
+
+```python
+Re_x_min = 10  # minimum Re_x for plot limits
+Re_x_max = 10**5  # maximum Re_x for plot limits
+Re_x_values = np.linspace(start=Re_x_min, stop=Re_x_max, num=Re_x_max - Re_x_min)
+```
+
+### Calculate critical bed-shear (Shields) velocity
+
+Using the dimensionless particle diameter and Reynolds number, the script calculates the critical bed-shear velocity \( u_{x, cr} \) based on empirical formulas, which include dependencies on gravitational acceleration, sediment diameter, and specific gravity.
+
+```python
+u_x_cr = np.sqrt(g * d50 * s * 0.5 * (0.22 * Re_x_values ** -0.6 + 0.06 * 10 ** (-7.7 * Re_x_values ** -0.6)))
+```
+
+### Generate the plot
+The script uses `matplotlib` to create a log-log plot of \( u_{x, cr} \) as a function of \( Re_x \), with labeled axes, logarithmic scales, grid lines, and a legend.
+
+```python
+plt.figure(figsize=(10, 6))
+plt.plot(Re_x_values, u_x_cr, label=r"$u_{x,cr}$ as a function of $Re_*$")
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(Re_x_min, Re_x_max)
+plt.ylim(4*0.001, 0.01)
+plt.xlabel(r"$Re_*$ (Reynolds number based on shear velocity)")
+plt.ylabel(r"$u_{x,cr}$ (m/s)")
+plt.title(r"Plot of $u_{x,cr}$ as a function of $Re_*$")
+plt.legend()
+plt.grid(which="both", linestyle="--", linewidth=0.5)
+plt.show()
+```
+
+Plot Details:
+- *X-axis*: Dimensionless grain Reynolds number, \( Re_x \).
+- *Y-axis*: Critical bed-shear velocity, \( u_{x, cr} \), in m/s.
+- *Scale*: Both axes are on a logarithmic scale for improved readability of a wide range of values.
+
+### Usage
+Run the script in a Python environment to display the plot of critical bed-shear velocity as a function of dimensionless grain size.
+
+## Bedform friction calculator
+
+This code is stored in `calculate_nm_bedforms.py`.
+
+## Requirements
+The script requires only the standard `math` module.
+
+### Workflow
+
+This script calculates the Manning's roughness coefficient \( n \) for a channel with bedforms, such as ripples and dunes. The workflow considers various sediment and hydraulic parameters to determine bedform types and frictional resistance. The script performs calculations of the hydraulic bed radius iteratively and includes bedform height, wavelength, equivalent roughness height, and the Chezy coefficient. The implemented routines orientate at the instructions provided in [Van Rijn (1984)](https://ascelibrary.org/doi/10.1061/%28ASCE%290733-9429%281984%29110%3A12%281733%29).
+
+
+
+### Constants
+The following constants are used:
+- `g` : Gravitational acceleration (9.81 m/s²).
+- `s` : Sediment density ratio (2.65, typical for sand in water).
+- `nu` : Kinematic viscosity of water (1e-6 m\(^2\)/s).
+
+```python
+g = 9.81
+s = 2.65
+nu = 1.0e-6
+```
+
+### User-Defined Parameters
+These parameters define flow conditions:
+- `U` : Flow velocity in m/s.
+- `h` : Water depth in meters, which approximates the hydraulic radius \( R \).
+- `S_0` : Channel slope.
+- `d_90` : Sediment particle size at 90% finer.
+
+```python
+U = 1.0
+h = 0.5
+S_0 = 0.0001
+d_90 = 0.00001
+```
+
+
+### 1. Dimensionless Particle Diameter \( d_* \)
+The dimensionless grain size \( d_* \) is calculated using sediment properties:
+
+```python
+d_star = ((s - 1) * g / nu**2) ** (1/3) * d_90
+```
+
+### 2. Critical Bed Shear Velocity \( u_{x, cr} \)
+The critical bed shear velocity is determined by an empirical formula based on grain Reynolds number:
+
+```python
+Re_star = (math.sqrt(g * h * S_0) * d_90) / nu
+u_x_cr = math.sqrt(g * d_90 * s * 0.5 * (0.22 * Re_star ** -0.6 + 0.06 * 10 ** (-7.7 * Re_star ** -0.6)))
+```
+
+### 3. Hydraulic Radius \( R \) and Equivalent Roughness \( k_s \)
+The roughness height \( k_s \) approximates the effect of sediment particles:
+
+```python
+R = h
+k_s = 3 * d_90
+```
+
+### 4. Iterative Calculation for Hydraulic Radius \( R_{h, b} \)
+An iterative loop refines the hydraulic radius of the bed \( R_{h, b} \) based on flow velocity and roughness:
+
+```python
+R_h_b = 1
+while delta_R_h_b > tolerance and it < max_iterations:
+    R_h_b = (U**2) / (g * S_0 * 18 * math.log(12 * (last_R_h_b / k_s), 10))
+```
+
+### 5. Transport Stage Parameter \( T_x \)
+The transport stage parameter \( T_x \) helps determine bedform type:
+
+```python
+if u_x_gr > u_x_cr:
+    T_x = (u_x_gr**2 - u_x_cr**2) / u_x_cr**2
+else:
+    T_x = 0.0
+```
+
+### 6. Bedform Type Classification
+Based on \( T_x \) and \( d_* \), the script classifies bedforms as "Ripples," "Dunes," "Transitional," or "Plane-bed."
+
+```python
+if T_x <= 1 and d_star <= 1:
+    bedform_type = "Ripples"
+elif (1 < T_x <= 15) or (d_star > 1 and T_x <= 15):
+    bedform_type = "Dunes"
+elif 15 < T_x <= 25:
+    bedform_type = "Transitional (dunes-planed-bed)"
+elif T_x > 25:
+    bedform_type = "Plane-bed"
+```
+
+### 7. Bedform Height and Wavelength
+These parameters are calculated based on water depth and sediment size:
+
+```python
+nu_h_b = 0.11 * h * (d_90 / h) ** 0.3 * (1 - math.exp(-0.5 * T_x)) * (25 - T_x)
+lambda_b = 7.3 * h
+```
+
+### 8. Total Equivalent Roughness Height and Chezy Coefficient
+The total roughness height incorporates bedforms, and the Chezy coefficient is calculated:
+
+```python
+k_s_b = k_s + 1.1 * nu_h_b * (1 - math.exp(-25 * nu_h_b / lambda_b))
+C_bedform = 18 * math.log(12 * R_h_b / k_s_b, 10)
+```
+
+### 9. Manning’s \( n_M \)
+The Manning’s \( n_M \) coefficient is derived using the Chezy coefficient:
+
+```python
+n_bedform = R**(1/6) / C_bedform
+```
+
+### Print results to Terminal
+
+The calculated results are displayed in a dictionary format:
+
+```python
+results = {
+    "Dimensionless Particle Diameter d_*": d_star,
+    "Critical Bed Shear Velocity u_{x, cr}": u_x_cr,
+    "Iterative Hydraulic Radius for Bed R_{h, b}": R_h_b,
+    "Transport stage parameter T_x": T_x,
+    "Bedform type": bedform_type,
+    "Equivalent roughness height k_s": k_s,
+    "Total equivalent roughness height k_s:b": k_s_b,
+    "Manning's n": n_bedform,
+    "According Strickler k_st": 1/n_bedform
+}
+```
+
+
