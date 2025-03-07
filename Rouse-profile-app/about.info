@@ -1,0 +1,89 @@
+# Rouse Profile Calculator
+
+**Note: These files have been developed with Claude 3.5 Sonnet.**
+
+This web application calculates and visualizes suspended sediment concentration profiles in open channel flow using the Rouse equation. It provides an interactive interface for exploring how flow velocity, water depth, and grain size affect sediment distribution.
+
+## Features
+
+- Interactive web interface for parameter input
+- Real-time calculation and visualization
+- Automatic calculation of:
+  - Settling velocity using van Rijn (1984) method
+  - Shear velocity using Colebrook-White formula
+  - Rouse number and concentration profile
+- Publication-quality plot output
+
+## Installation
+
+1. Clone this repository or download the files:
+   - `app.py` - Flask web server
+   - `plot_Rouse_profile_ssc.py` - Core calculation and plotting module
+   - `index.html` - Web interface
+   - `requirements.txt` - Python dependencies
+
+2. Create and activate a virtual environment (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install the required packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+1. Start the web application:
+   ```bash
+   python app.py
+   ```
+   The application will automatically open in your default web browser.
+
+2. Enter your parameters in the web interface:
+   - Flow velocity (m/s)
+   - Water depth (m)
+   - Grain size (μm)
+
+3. Click "Calculate Profile" to generate the Rouse profile.
+
+4. The results will show:
+   - A plot of the concentration profile
+   - Calculated parameters (settling velocity, shear velocity, Rouse number)
+
+## Code Structure
+
+### app.py
+- Flask web server that handles the web interface
+- Routes for serving the interface and processing calculations
+- Manages communication between the web interface and calculation module
+
+### plot_Rouse_profile_ssc.py
+- Core calculation module
+- Implements the Rouse profile calculations
+- Handles plot generation using matplotlib
+- Contains physical parameters and constants
+
+## Default Parameters
+
+The application comes with default parameters suitable for typical sediment transport conditions:
+- Flow velocity: 2.1 m/s
+- Water depth: 1.0 m
+- Grain size: 200 μm
+
+## Technical Details
+
+For more detailed information about the physical principles and calculations, see `readme.tex`, which provides the mathematical background and equations used in the calculations.
+
+## Requirements
+
+- Python 3.6+
+- Flask
+- NumPy
+- Matplotlib
+- Additional dependencies listed in requirements.txt
+
+## License
+
+This project is provided as open-source software. Feel free to use and modify as needed.
