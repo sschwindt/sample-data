@@ -3,12 +3,12 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-# TYPICAL DUTCH RHINE PARAMETERS
-DEFAULT_FLOW_VELOCITY = 2.1  # m/s
-DEFAULT_WATER_DEPTH = 1.0    # m 
-DEFAULT_D50 = 200e-6        # m (200 micro m, typical suspended sediment size)
-DEFAULT_REF_HEIGHT = 0.05    # m (reference height above bed)
-DEFAULT_REF_CONC = 0.9      # kg/m³ (typical reference concentration)
+# USER INPUT PARAMETERS
+USER_FLOW_VELOCITY = 2.1  # m/s
+USER_WATER_DEPTH = 1.0    # m 
+USER_D50 = 200e-6        # m (200 micro m, typical suspended sediment size)
+USER_REF_HEIGHT = 0.05    # m (reference height above bed)
+USER_REF_CONC = 0.9      # kg/m³ (typical reference concentration)
 
 # CONSTANTS
 RHO_F = 1000.0  # water density (kg/m³)
@@ -69,7 +69,7 @@ def plot_Rouse_profile(a=DEFAULT_REF_HEIGHT, c_a=DEFAULT_REF_CONC,
     Plot the Rouse profile for suspended sediment concentration
     """
     if w_s is None or u_star is None:
-        U = DEFAULT_FLOW_VELOCITY
+        U = USER_FLOW_VELOCITY
         d = DEFAULT_D50
         w_s = get_particle_settling_velocity(U, h, d, print_results=False)
         u_star = get_u_star(U, h, d)
@@ -129,7 +129,7 @@ def plot_Rouse_profile(a=DEFAULT_REF_HEIGHT, c_a=DEFAULT_REF_CONC,
 
 if __name__ == "__main__":
     # Use default values for Dutch Rhine
-    U = DEFAULT_FLOW_VELOCITY
+    U = USER_FLOW_VELOCITY
     h = DEFAULT_WATER_DEPTH
     d = DEFAULT_D50
     

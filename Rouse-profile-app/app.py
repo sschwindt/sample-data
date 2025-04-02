@@ -21,7 +21,7 @@ def open_browser():
 
 # Generate default plot at startup
 def generate_default_plot():
-    U = rouse.DEFAULT_FLOW_VELOCITY
+    U = rouse.USER_FLOW_VELOCITY
     h = rouse.DEFAULT_WATER_DEPTH
     d = rouse.DEFAULT_D50
     w_s = rouse.get_particle_settling_velocity(U, h, d, print_results=False)
