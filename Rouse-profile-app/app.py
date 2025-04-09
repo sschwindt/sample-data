@@ -22,17 +22,27 @@ def open_browser():
 # Generate default plot at startup
 def generate_default_plot():
     U = rouse.USER_FLOW_VELOCITY
-    h = rouse.DEFAULT_WATER_DEPTH
-    d = rouse.DEFAULT_D50
+    h = rouse.USER_WATER_DEPTH
+    d = rouse.USER_D50
     w_s = rouse.get_particle_settling_velocity(U, h, d, print_results=False)
     u_star = rouse.get_u_star(U, h, d)
-    rouse.plot_Rouse_profile(w_s=w_s, u_star=u_star, h=h)
+    # Generate a single Rouse profile
+    rouse.plot_rouse_profile(
+        w_s=w_s,
+        u_star=u_star,
+        h=h,
+        a=rouse.USER_REF_HEIGHT,
+        c_a=rouse.USER_REF_CONC,
+        show_plot=False,
+        filename="ssc-Rouse-profile.png"
+    )
 
 @app.route('/')
 def home():
     # Ensure default plot exists
     if not os.path.exists('ssc-Rouse-profile.png'):
         generate_default_plot()
+    # Return your homepage
     return send_file('index.html')
 
 @app.route('/calculate', methods=['POST'])
@@ -41,23 +51,34 @@ def calculate():
     
     # Convert grain size from μm to m
     velocity = float(data['velocity'])
-    depth = float(data['depth'])
-    grain_size = float(data['grain_size']) * 1e-6  # Convert μm to m
-    
+    depth    = float(data['depth'])
+    grain_size = float(data['grain_size']) * 1e-6  # Convert μm -> m
+
     # Calculate parameters
     w_s = rouse.get_particle_settling_velocity(velocity, depth, grain_size, print_results=False)
     u_star = rouse.get_u_star(velocity, depth, grain_size)
-    
-    # Generate plot
-    rouse.plot_Rouse_profile(w_s=w_s, u_star=u_star, h=depth)
+
+    # Generate the single-profile plot for these inputs
+    rouse.plot_rouse_profile(
+        w_s=w_s,
+        u_star=u_star,
+        h=depth,
+        a=rouse.USER_REF_HEIGHT,
+        c_a=rouse.USER_REF_CONC,
+        show_plot=False,
+        filename="ssc-Rouse-profile.png"
+    )
     
     # Calculate Rouse number
-    beta = w_s / (rouse.KAPPA * u_star)
+    beta = 0.0
+    if u_star != 0.0:
+        beta = w_s / (rouse.KAPPA * u_star)
     
+    # Return JSON with interesting values
     return jsonify({
         'settling_velocity': w_s,
-        'shear_velocity': u_star,
-        'rouse_number': beta
+        'shear_velocity'   : u_star,
+        'rouse_number'     : beta
     })
 
 @app.route('/ssc-Rouse-profile.png')
@@ -68,7 +89,7 @@ def get_image():
     return send_file('ssc-Rouse-profile.png', mimetype='image/png')
 
 if __name__ == '__main__':
-    # Ensure the index.html is in the same directory as app.py
+    # Check for index.html
     if not os.path.exists('index.html'):
         print("Warning: index.html not found in the current directory!")
     
@@ -80,4 +101,4 @@ if __name__ == '__main__':
         Timer(1.5, open_browser).start()
     
     # Run the Flask app
-    app.run(debug=True) 
+    app.run(debug=True)
