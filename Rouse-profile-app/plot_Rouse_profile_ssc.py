@@ -155,13 +155,13 @@ def plot_rouse_sweep(a=USER_REF_HEIGHT,
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm, ax=ax)  # attach colorbar to current axes
-    cbar.set_label("Rouse number (Z)")
+    cbar.set_label("Rouse number $P_R$")
 
     ax.set_xlabel("Suspended sediment concentration (kg/m³)")
     ax.set_ylabel("Height above bed (m)")
     ax.set_xlim(left=0)
     ax.set_ylim([0, h])
-    ax.set_title("Suspended Sediment Concentration Profiles\n(Rouse Number Sweep)")
+    # ax.set_title("Suspended Sediment Concentration Profiles\n(Rouse Number Sweep)")
 
     plt.tight_layout()
     
