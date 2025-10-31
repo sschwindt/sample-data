@@ -1,0 +1,14 @@
+## About
+
+This script calculates the wave number k_w, which is relevant for total load estimates, for instance, in Bijker's methods.
+
+## Requirements
+
+Numpy
+
+## References
+
+Bijker (1971): https://ascelibrary.org/doi/10.1061/AWHCAR.0000122
+Bijker (1992): https://repository.tudelft.nl/islandora/object/uuid%3A4574aaa1-9246-4981-8305-c3a932e4ce03
+Soulsby (1997): https://www.icevirtuallibrary.com/doi/abs/10.1680/doms.25844
+Soulsby and Clarke (2005): https://eprints.hrwallingford.com/558/
